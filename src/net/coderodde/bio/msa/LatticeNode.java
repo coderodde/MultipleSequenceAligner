@@ -170,18 +170,18 @@ final class LatticeNode {
         return ret;
     }
     
-    public static void main(String[] args) {
-        MultipleSequenceAlignmentInstance msa = 
-                new MultipleSequenceAlignmentInstance(
-                        PAM250CostMatrix.getPAM250CostMatrix(),
-                        3, 
-                        "ACC", "C", "CD");
-        
-        LatticeNode start = new LatticeNode(msa, new int[] { 1, 1, 1});
-        LatticeNode[] children = start.getChildren();
-        
-        for (LatticeNode child : children) {
-            System.out.println(child);
-        }
-    }
+//    public static void main(String[] args) {
+//        MultipleSequenceAlignmentInstance msa = 
+//                new MultipleSequenceAlignmentInstance(
+//                        PAM250CostMatrix.getPAM250CostMatrix(),
+//                        3, 
+//                        "ACC", "C", "CD");
+//        
+//        LatticeNode start = new LatticeNode(msa, new int[] { 1, 1, 1});
+//        LatticeNode[] children = start.getChildren();
+//        
+//        for (LatticeNode child : children) {
+//            System.out.println(child);
+//        }
+//    }
 }

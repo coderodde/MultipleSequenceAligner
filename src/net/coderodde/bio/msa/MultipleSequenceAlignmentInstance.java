@@ -37,7 +37,11 @@ public final class MultipleSequenceAlignmentInstance {
                     checkIsValidGenomicSequence(sequenceArray[i]);
         }
     }
-
+    
+    public Alignment align() {
+        return null;
+    }
+    
     /**
      * Create the source node for the sequence alignment task, i.e., a lattice 
      * node with all coordinates set to zero.
