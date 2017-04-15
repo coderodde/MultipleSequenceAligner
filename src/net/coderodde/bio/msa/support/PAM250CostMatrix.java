@@ -22,7 +22,7 @@ public final class PAM250CostMatrix implements CostMatrix<Integer> {
     private PAM250CostMatrix() {
         AminoAcidAlphabet alphabet = AminoAcidAlphabet.getAminoAcidAlphabet();
         
-        alphabet.getAlphabet().stream().forEach((character) -> {
+        alphabet.getCharacterSet().stream().forEach((character) -> {
             m.put(character, new HashMap<>());
         });
         

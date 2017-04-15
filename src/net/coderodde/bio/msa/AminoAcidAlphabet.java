@@ -45,7 +45,7 @@ public final class AminoAcidAlphabet {
         alphabet.add('Y');
     }
     
-    public Set<Character> getAlphabet() {
+    public Set<Character> getCharacterSet() {
         return Collections.<Character>unmodifiableSet(alphabet);
     }
 }
