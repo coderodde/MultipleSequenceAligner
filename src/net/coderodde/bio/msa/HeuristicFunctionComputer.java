@@ -9,13 +9,17 @@ final class HeuristicFunctionComputer {
     HeuristicFunction computeHeuristicFunction(
             MultipleSequenceAlignmentInstance instance) {
         String[] sequenceArray = instance.getSequenceArray();
-        HeuristicFunction heuristicFunction = new HeuristicFunction();
+        HeuristicFunction heuristicFunction = new HeuristicFunction(instance);
         
-        for (int i = 0; i < sequenceArray.length; ++i) {
-            for (int j = i + 1; j < sequenceArray.length; ++j) {
+        for (int dimension1 = 0; 
+                dimension1 < sequenceArray.length; 
+                dimension1++) {
+            for (int dimension2 = dimension1 + 1; 
+                    dimension2 < sequenceArray.length; 
+                    dimension2++) {
                 loadPartialHeuristicFunction(heuristicFunction,
-                                             i,
-                                             j,
+                                             dimension1,
+                                             dimension2,
                                              instance);
             }
         }
@@ -25,12 +29,17 @@ final class HeuristicFunctionComputer {
     
     private void loadPartialHeuristicFunction(
             HeuristicFunction heuristicFunction,
-            int i,
-            int j,
+            int dimension1,
+            int dimension2,
             MultipleSequenceAlignmentInstance instance) {
         LatticeNode target = instance.getTargetNode();
         Queue<LatticeNodeHolder> open = new PriorityQueue<>();
-        heuristicFunction.put(extractPoint(target, i, j), j);
+        heuristicFunction.put(dimension1,
+                              dimension2,
+                              extractPoint(target, 
+                                           dimension1, 
+                                           dimension2),
+                              0);
         
         while (!open.isEmpty()) {
             LatticeNodeHolder currentNodeHolder = open.remove();
@@ -41,10 +50,17 @@ final class HeuristicFunctionComputer {
                 int tentativeCost = 
                         currentNodeCost + instance.getWeight(parent, 
                                                              currentNode);
-                Point parentPoint = extractPoint(parent, i, j);
+                Point parentPoint = extractPoint(parent, 
+                                                 dimension1, 
+                                                 dimension2);
                 
-                if (!heuristicFunction.contains(parentPoint)
-                        || heuristicFunction.get(parentPoint) > tentativeCost) {
+                if (!heuristicFunction.containsPartial(dimension1,
+                                                       dimension2, 
+                                                       parentPoint)
+                        || heuristicFunction.getPartial(dimension1,
+                                                        dimension2,
+                                                        parentPoint)
+                        > tentativeCost) {
                     open.add(new LatticeNodeHolder(parent, tentativeCost));
                 }
             }
