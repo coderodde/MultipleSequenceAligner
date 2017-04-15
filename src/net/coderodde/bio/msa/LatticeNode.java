@@ -50,20 +50,22 @@ final class LatticeNode {
         // Find out in how many dimension we can move forward:
         int dimensionsNotReached = 0;
         String[] sequenceArray = instance.getSequenceArray();
-        int[] temporaryCoordinates = coordinates.clone();
         boolean[] inclusionMap = new boolean[coordinates.length];
         
         for (int i = 0; i < sequenceArray.length; ++i) {
             if (coordinates[i] < sequenceArray[i].length()) {
                 dimensionsNotReached++;
+                // We can make a step forward in the direction of ith dimension:
                 inclusionMap[i] = true;
             }
         }
         
+        // Create the array of children:
         int numberOfChildren = pow2(dimensionsNotReached) - 1;
         LatticeNode[] children = new LatticeNode[numberOfChildren];
         loadChildren(children, inclusionMap);
         
+        // Convert offsets to actual child coordinates:
         for (LatticeNode child : children) {
             child.addOffsets(coordinates);
         }
@@ -72,7 +74,35 @@ final class LatticeNode {
     }
     
     LatticeNode[] getParents() {
-        return null;
+        // Find out in how many dimensions we can move BACKward:
+        int dimensionsNotReached = 0;
+        String[] sequenceArray = instance.getSequenceArray();
+        boolean[] inclusionMap = new boolean[coordinates.length];
+        
+        for (int i = 0; i < sequenceArray.length; ++i) {
+            if (coordinates[i] > 0) {
+                dimensionsNotReached++;
+                // We can make a step backwards in the direction of ith 
+                // dimension:
+                inclusionMap[i] = true;
+            }
+        }
+        
+        // Create the array of parents:
+        int numberOfParents = pow2(dimensionsNotReached) - 1;
+        LatticeNode[] parents = new LatticeNode[numberOfParents];
+        loadParents(parents, inclusionMap);
+        
+        // Convert the offsets to actual parent coordinates:
+        for (LatticeNode parent : parents) {
+            parent.addOffsets(coordinates);
+        }
+        
+        return parents;
+    }
+    
+    int[] getCoordinates() {
+        return coordinates;
     }
     
     private void loadChildren(LatticeNode[] children, 
@@ -85,6 +115,15 @@ final class LatticeNode {
         }
     }
     
+    private void loadParents(LatticeNode[] parents, boolean[] inclusionMap) {
+        int[] coords = new int[parents.length];
+        
+        for (int i = 0; i != parents.length; ++i) {
+            decrement(coords, inclusionMap);
+            parents[i] = new LatticeNode(instance, coords.clone());
+        }
+    }
+    
     private static void increment(int[] coordinates, boolean[] inclusionMap) {
         for (int i = 0; i < coordinates.length; ++i) {
             if (!inclusionMap[i]) {
@@ -93,6 +132,21 @@ final class LatticeNode {
             
             if (coordinates[i] == 0) {
                 coordinates[i] = 1;
+                return;
+            }
+            
+            coordinates[i] = 0;
+        }
+    }
+    
+    private static void decrement(int[] coordinates, boolean[] inclusionMap) {
+        for (int i = 0; i < coordinates.length; ++i) {
+            if (!inclusionMap[i]) {
+                continue;
+            }
+            
+            if (coordinates[i] == 0) {
+                coordinates[i] = -1;
                 return;
             }
             

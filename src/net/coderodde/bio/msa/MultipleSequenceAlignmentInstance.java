@@ -20,6 +20,9 @@ public final class MultipleSequenceAlignmentInstance {
      */
     private final String[] sequenceArray;
     
+    // A small speed optimization:
+    private final char[] column;
+    
     public MultipleSequenceAlignmentInstance(CostMatrix<Integer> costMatrix,
                                              int gapPenalty,
                                              String... sequenceArray) {
@@ -27,6 +30,7 @@ public final class MultipleSequenceAlignmentInstance {
                                                  "Cost matrix is null");
         this.gapPenalty = gapPenalty;
         this.sequenceArray = sequenceArray.clone();
+        this.column = new char[sequenceArray.length];
         
         for (int i = 0; i != sequenceArray.length; ++i) {
             this.sequenceArray[i] = 
@@ -59,6 +63,49 @@ public final class MultipleSequenceAlignmentInstance {
         }
         
         return new LatticeNode(this, targetCoordinates);
+    }
+    
+    Integer getWeight(LatticeNode tail, LatticeNode head) {
+        // Extract the column represented by taking a single hop from 'tail' to
+        // 'head':
+        int[] tailCoordinates = tail.getCoordinates();
+        int[] headCoordinates = head.getCoordinates();
+        
+        for (int i = 0; i < sequenceArray.length; ++i) {
+            if (tailCoordinates[i] + 1 == headCoordinates[i]) {
+                column[i] = sequenceArray[i].charAt(tailCoordinates[i]);
+            } else {
+                column[i] = AminoAcidAlphabet.GAP_CHARACTER;
+            }
+        }
+        
+        // Compute the hop cost as the sum of pairwise hops in any plane:
+        int cost = 0;
+        
+        for (int i = 0; i < column.length; ++i) {
+            char character1 = column[i];
+            
+            for (int j = i + 1; j < column.length; ++j) {
+                char character2 = column[j];
+                
+                if (character1 != AminoAcidAlphabet.GAP_CHARACTER) {
+                    if (character2 != AminoAcidAlphabet.GAP_CHARACTER) {
+                        cost += costMatrix.getCost(character1, character2);
+                    } else {
+                        cost += gapPenalty;
+                    }
+                } else {
+                    // character1 IS the gap character:
+                    if (character2 != AminoAcidAlphabet.GAP_CHARACTER) {
+                        cost += gapPenalty;
+                    } else {
+                        // Do nothing since we have a pair (gap, gap).
+                    }
+                }
+            }
+        }
+        
+        return cost;
     }
     
     String[] getSequenceArray() {
