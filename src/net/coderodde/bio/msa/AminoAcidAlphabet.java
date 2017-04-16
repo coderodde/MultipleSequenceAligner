@@ -20,29 +20,14 @@ public final class AminoAcidAlphabet {
     }
     
     private AminoAcidAlphabet() {
-        alphabet.add('A');
-        alphabet.add('C');
-        alphabet.add('D');
-        alphabet.add('E');
-        alphabet.add('F');
+        String aminoAcids = "ACDEF" +
+                            "GHIKL" +
+                            "MNPQR" +
+                            "STVWY";
         
-        alphabet.add('G');
-        alphabet.add('H');
-        alphabet.add('I');
-        alphabet.add('K');
-        alphabet.add('L');
-        
-        alphabet.add('M');
-        alphabet.add('N');
-        alphabet.add('P');
-        alphabet.add('Q');
-        alphabet.add('R');
-        
-        alphabet.add('S');
-        alphabet.add('T');
-        alphabet.add('V');
-        alphabet.add('W');
-        alphabet.add('Y');
+        for (char c : aminoAcids.toCharArray()) {
+            alphabet.add(c);
+        }
     }
     
     public Set<Character> getCharacterSet() {
