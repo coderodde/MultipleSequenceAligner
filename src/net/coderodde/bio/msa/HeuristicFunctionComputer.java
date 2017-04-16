@@ -47,9 +47,11 @@ final class HeuristicFunctionComputer {
             Integer currentNodeCost = currentNodeHolder.getCost();
             
             for (LatticeNode parent : currentNode.getParents()) {
-                int tentativeCost = 
+                int tentativeCost =
                         currentNodeCost + instance.getWeight(parent, 
-                                                             currentNode);
+                                                             currentNode, 
+                                                             dimension1, 
+                                                             dimension2);
                 Point parentPoint = extractPoint(parent, 
                                                  dimension1, 
                                                  dimension2);

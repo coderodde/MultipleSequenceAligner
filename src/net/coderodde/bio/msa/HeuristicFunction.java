@@ -51,8 +51,4 @@ final class HeuristicFunction {
         
         return cost;
     }
-    
-    private static Point extractPoint(int[] coordinates, int i, int j) {
-        return new Point(coordinates[i], coordinates[j]);
-    }
 }

@@ -1,6 +1,13 @@
 package net.coderodde.bio.msa;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 public final class MultipleSequenceAlignmentInstance {
@@ -39,7 +46,40 @@ public final class MultipleSequenceAlignmentInstance {
     }
     
     public Alignment align() {
-        return null;
+        HeuristicFunction hf = new HeuristicFunctionComputer()
+                .computeHeuristicFunction(this);
+        Queue<LatticeNodeHolder> open = new PriorityQueue<>();
+        Map<LatticeNode, Integer> distance = new HashMap<>();
+        Map<LatticeNode, LatticeNode> parents = new HashMap<>();
+        
+        LatticeNode sourceNode = getSourceNode();
+        LatticeNode targetNode = getTargetNode();
+        
+        open.add(new LatticeNodeHolder(sourceNode, 0));
+        distance.put(sourceNode, 0);
+        parents.put(sourceNode, null);
+        
+        while (true) {
+            LatticeNode currentNode = open.remove().getNode();
+            
+            if (currentNode.equals(targetNode)) {
+                return tracebackPath(parents, distance.get(currentNode));
+            }
+            
+            for (LatticeNode childNode : currentNode.getChildren()) {
+                int tentativeCost = distance.get(currentNode) +
+                                    getWeight(currentNode, childNode);
+                Integer currentCost = distance.get(childNode);
+                
+                if (currentCost == null || currentCost > tentativeCost) {
+                    open.add(new LatticeNodeHolder(childNode, 
+                                                   tentativeCost + 
+                                                           hf.get(childNode)));
+                    distance.put(childNode, tentativeCost);
+                    parents.put(childNode, currentNode);
+                }
+            }
+        }
     }
     
     /**
@@ -67,6 +107,30 @@ public final class MultipleSequenceAlignmentInstance {
         }
         
         return new LatticeNode(this, targetCoordinates);
+    }
+    
+    Integer getWeight(LatticeNode tail,
+                      LatticeNode head, 
+                      int dimension1,
+                      int dimension2) {
+        int[] tailCoordinates = tail.getCoordinates();
+        int[] headCoordinates = head.getCoordinates();
+        
+        if (tailCoordinates[dimension1] == headCoordinates[dimension1]) {
+            System.out.println("1");
+            return gapPenalty;
+        } else if (tailCoordinates[dimension2] == headCoordinates[dimension2]) {
+            System.out.println("2");
+            return gapPenalty;
+        } else {
+            System.out.println("3");
+            char character1 = sequenceArray[dimension1]
+                    .charAt(tailCoordinates[dimension1]);
+            
+            char character2 = sequenceArray[dimension2]
+                    .charAt(tailCoordinates[dimension2]);
+            return costMatrix.getCost(character1, character2);
+        }
     }
     
     Integer getWeight(LatticeNode tail, LatticeNode head) {
@@ -116,6 +180,23 @@ public final class MultipleSequenceAlignmentInstance {
         return sequenceArray;
     }
     
+    private Alignment tracebackPath(Map<LatticeNode, LatticeNode> parents,
+                                    Integer cost) {
+        List<LatticeNode> path = new ArrayList<>();
+        LatticeNode node = getTargetNode();
+        
+        while (node != null) {
+            path.add(node);
+            node = parents.get(node);
+        }
+        
+        Collections.<LatticeNode>reverse(path);
+        
+        String[] strings = new String[getSequenceArray().length];
+        
+        return new Alignment(strings, cost);
+    }
+    
     private String checkIsValidGenomicSequence(String string) {
         Set<Character> characterSet = 
                 AminoAcidAlphabet.getAminoAcidAlphabet()
@@ -128,5 +209,26 @@ public final class MultipleSequenceAlignmentInstance {
         }
         
         return string;
+    }
+    
+    private static final class LatticeNodeHolder
+            implements Comparable<LatticeNodeHolder> {
+
+        private final Integer fScore;
+        private final LatticeNode node;
+        
+        LatticeNodeHolder(LatticeNode node, Integer fScore) {
+            this.fScore = fScore;
+            this.node = node;
+        }
+        
+        LatticeNode getNode() {
+            return node;
+        }
+        
+        @Override
+        public int compareTo(LatticeNodeHolder o) {
+            return Integer.compare(fScore, o.fScore);
+        }
     }
 }
