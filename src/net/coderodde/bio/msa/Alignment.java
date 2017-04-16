@@ -21,6 +21,7 @@ public class Alignment {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Cost: ").append(cost).append("\n");
         String separator = "";
         
         for (String row : alignment) {

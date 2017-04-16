@@ -66,8 +66,6 @@ public final class MultipleSequenceAlignmentInstance {
                 return tracebackPath(parents, distance.get(currentNode));
             }
             
-            //System.out.println(currentNode);
-            
             for (LatticeNode childNode : currentNode.getChildren()) {
                 int tentativeCost = distance.get(currentNode) +
                                     getWeight(currentNode, childNode);
@@ -77,6 +75,39 @@ public final class MultipleSequenceAlignmentInstance {
                     open.add(new LatticeNodeHolder(childNode, 
                                                    tentativeCost + 
                                                            hf.get(childNode)));
+                    distance.put(childNode, tentativeCost);
+                    parents.put(childNode, currentNode);
+                }
+            }
+        }
+    }
+    
+    public Alignment alignBrute() {
+        Queue<LatticeNodeHolder> open = new PriorityQueue<>();
+        Map<LatticeNode, Integer> distance = new HashMap<>();
+        Map<LatticeNode, LatticeNode> parents = new HashMap<>();
+        
+        LatticeNode sourceNode = getSourceNode();
+        LatticeNode targetNode = getTargetNode();
+        
+        open.add(new LatticeNodeHolder(sourceNode, 0));
+        distance.put(sourceNode, 0);
+        parents.put(sourceNode, null);
+        
+        while (true) {
+            LatticeNode currentNode = open.remove().getNode();
+            
+            if (currentNode.equals(targetNode)) {
+                return tracebackPath(parents, distance.get(currentNode));
+            }
+            
+            for (LatticeNode childNode : currentNode.getChildren()) {
+                int tentativeCost = distance.get(currentNode) +
+                                    getWeight(currentNode, childNode);
+                Integer currentCost = distance.get(childNode);
+                
+                if (currentCost == null || currentCost > tentativeCost) {
+                    open.add(new LatticeNodeHolder(childNode, tentativeCost));
                     distance.put(childNode, tentativeCost);
                     parents.put(childNode, currentNode);
                 }
@@ -210,7 +241,8 @@ public final class MultipleSequenceAlignmentInstance {
             
             for (int j = 0; j < tailCoordinates.length; ++j) {
                 if (tailCoordinates[j] != headCoordinates[j]) {
-                    stringBuilders[j].append(sequenceArray[tailCoordinates[j]]);
+                    stringBuilders[j].
+                            append(sequenceArray[j].charAt(tailCoordinates[j]));
                 } else {
                     stringBuilders[j].append(AminoAcidAlphabet.GAP_CHARACTER);
                 }

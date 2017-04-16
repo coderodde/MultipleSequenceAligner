@@ -14,8 +14,9 @@ final class App {
         MultipleSequenceAlignmentInstance instance = 
                 new MultipleSequenceAlignmentInstance(
                         PAM250CostMatrix.getPAM250CostMatrix(),
-                        8, 
+                        2, 
                         SEQUENCES);
         System.out.println(instance.align());
+        System.out.println(instance.alignBrute());
     }
 }
