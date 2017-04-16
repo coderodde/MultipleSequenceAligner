@@ -66,6 +66,8 @@ public final class MultipleSequenceAlignmentInstance {
                 return tracebackPath(parents, distance.get(currentNode));
             }
             
+            //System.out.println(currentNode);
+            
             for (LatticeNode childNode : currentNode.getChildren()) {
                 int tentativeCost = distance.get(currentNode) +
                                     getWeight(currentNode, childNode);
@@ -117,13 +119,13 @@ public final class MultipleSequenceAlignmentInstance {
         int[] headCoordinates = head.getCoordinates();
         
         if (tailCoordinates[dimension1] == headCoordinates[dimension1]) {
-            System.out.println("1");
+            //System.out.println("1");
             return gapPenalty;
         } else if (tailCoordinates[dimension2] == headCoordinates[dimension2]) {
-            System.out.println("2");
+            //System.out.println("2");
             return gapPenalty;
         } else {
-            System.out.println("3");
+//            System.out.println("3");
             char character1 = sequenceArray[dimension1]
                     .charAt(tailCoordinates[dimension1]);
             
@@ -194,6 +196,10 @@ public final class MultipleSequenceAlignmentInstance {
         
         String[] strings = new String[getSequenceArray().length];
         StringBuilder[] stringBuilders = new StringBuilder[strings.length];
+        
+        for (int i = 0; i < stringBuilders.length; ++i) {
+            stringBuilders[i] = new StringBuilder();
+        }
         
         for (int i = 1; i < path.size(); ++i) {
             LatticeNode tail = path.get(i - 1);

@@ -1,5 +1,6 @@
 package net.coderodde.bio.msa;
 
+import com.sun.corba.se.spi.orb.OperationFactory;
 import java.util.Arrays;
 
 final class LatticeNode {
@@ -104,9 +105,8 @@ final class LatticeNode {
         return coordinates;
     }
     
-    private void loadChildren(LatticeNode[] children, 
-                                     boolean[] inclusionMap) {
-        int[] coords = new int[children.length];
+    private void loadChildren(LatticeNode[] children, boolean[] inclusionMap) {
+        int[] coords = new int[this.coordinates.length];
         
         for (int i = 0; i != children.length; ++i) {
             increment(coords, inclusionMap);
@@ -115,7 +115,7 @@ final class LatticeNode {
     }
     
     private void loadParents(LatticeNode[] parents, boolean[] inclusionMap) {
-        int[] coords = new int[parents.length];
+        int[] coords = new int[this.coordinates.length];
         
         for (int i = 0; i != parents.length; ++i) {
             decrement(coords, inclusionMap);

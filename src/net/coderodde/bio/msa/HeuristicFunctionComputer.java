@@ -34,17 +34,25 @@ final class HeuristicFunctionComputer {
             MultipleSequenceAlignmentInstance instance) {
         LatticeNode target = instance.getTargetNode();
         Queue<LatticeNodeHolder> open = new PriorityQueue<>();
-        heuristicFunction.put(dimension1,
-                              dimension2,
-                              extractPoint(target, 
-                                           dimension1, 
-                                           dimension2),
-                              0);
+        open.add(new LatticeNodeHolder(target, 0));
+//        heuristicFunction.put(dimension1,
+//                              dimension2,
+//                              extractPoint(target, 
+//                                           dimension1, 
+//                                           dimension2),
+//                              0);
         
         while (!open.isEmpty()) {
             LatticeNodeHolder currentNodeHolder = open.remove();
             LatticeNode currentNode = currentNodeHolder.getLatticeNode();
             Integer currentNodeCost = currentNodeHolder.getCost();
+            
+            heuristicFunction.put(dimension1,
+                                  dimension2, 
+                                  extractPoint(currentNode, 
+                                               dimension1, 
+                                               dimension2), 
+                                  currentNodeCost);
             
             for (LatticeNode parent : currentNode.getParents()) {
                 int tentativeCost =
