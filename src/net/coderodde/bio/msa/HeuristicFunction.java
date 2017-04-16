@@ -13,6 +13,8 @@ final class HeuristicFunction {
         this.matrix = new Map[sequences][];
         
         for (int i = 0; i < sequences; ++i) {
+            this.matrix[i] = new Map[sequences];
+            
             for (int j = i + 1; j < sequences; ++j) {
                 this.matrix[i][j] = new HashMap<>();
             }

@@ -16,6 +16,6 @@ final class App {
                         PAM250CostMatrix.getPAM250CostMatrix(),
                         8, 
                         SEQUENCES);
-        instance.align();
+        System.out.println(instance.align());
     }
 }

@@ -1,7 +1,6 @@
 package net.coderodde.bio.msa;
 
 import java.util.Arrays;
-import net.coderodde.bio.msa.support.PAM250CostMatrix;
 
 final class LatticeNode {
 
