@@ -1,8 +1,10 @@
 package net.coderodde.bio.msa;
 
 import java.awt.Point;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 final class HeuristicFunctionComputer {
 
@@ -27,6 +29,8 @@ final class HeuristicFunctionComputer {
         return heuristicFunction;
     }
     
+    // Basically, this method runs Dijkstra backwards from the target node until
+    // the entire 2D-grid is explored.
     private void loadPartialHeuristicFunction(
             HeuristicFunction heuristicFunction,
             int dimension1,
@@ -34,36 +38,45 @@ final class HeuristicFunctionComputer {
             MultipleSequenceAlignmentInstance instance) {
         LatticeNode target = instance.getTargetNode();
         Queue<LatticeNodeHolder> open = new PriorityQueue<>();
+        Set<LatticeNode> closed = new HashSet<>();
         open.add(new LatticeNodeHolder(target, 0));
+        Point point = new Point();
         
         while (!open.isEmpty()) {
             LatticeNodeHolder currentNodeHolder = open.remove();
             LatticeNode currentNode = currentNodeHolder.getLatticeNode();
-            Integer currentNodeCost = currentNodeHolder.getCost();
             
+            if (closed.contains(currentNode)) {
+                continue;
+            }
+            
+            closed.add(currentNode);
+            
+            Integer currentNodeCost = currentNodeHolder.getCost();
+            extractPoint(point, currentNode, dimension1, dimension2);
             heuristicFunction.put(dimension1,
                                   dimension2, 
-                                  extractPoint(currentNode, 
-                                               dimension1, 
-                                               dimension2), 
+                                  new Point(point),
                                   currentNodeCost);
             
             for (LatticeNode parent : currentNode.getParents()) {
+                if (closed.contains(parent)) {
+                    continue;
+                }
+                
                 int tentativeCost =
                         currentNodeCost + instance.getWeight(parent, 
                                                              currentNode, 
                                                              dimension1, 
                                                              dimension2);
-                Point parentPoint = extractPoint(parent, 
-                                                 dimension1, 
-                                                 dimension2);
+                extractPoint(point, parent, dimension1, dimension2);
                 
                 if (!heuristicFunction.containsPartial(dimension1,
                                                        dimension2, 
-                                                       parentPoint)
+                                                       point)
                         || heuristicFunction.getPartial(dimension1,
                                                         dimension2,
-                                                        parentPoint)
+                                                        point)
                         > tentativeCost) {
                     open.add(new LatticeNodeHolder(parent, tentativeCost));
                 }
@@ -71,9 +84,13 @@ final class HeuristicFunctionComputer {
         }
     }
     
-    private static Point extractPoint(LatticeNode latticeNode, int i, int j) {
-        return new Point(latticeNode.getCoordinates()[i],
-                         latticeNode.getCoordinates()[j]);
+    private static void extractPoint(Point point,
+                                     LatticeNode latticeNode, 
+                                     int i, 
+                                     int j) {
+        int[] coordinates = latticeNode.getCoordinates();
+        point.x = coordinates[i];
+        point.y = coordinates[j];
     }
     
     private static final class LatticeNodeHolder 

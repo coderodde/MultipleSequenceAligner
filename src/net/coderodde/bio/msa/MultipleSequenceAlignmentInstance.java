@@ -47,8 +47,14 @@ public final class MultipleSequenceAlignmentInstance {
     }
     
     public Alignment align() {
+        long start = System.currentTimeMillis();
         HeuristicFunction hf = new HeuristicFunctionComputer()
                 .computeHeuristicFunction(this);
+        long end = System.currentTimeMillis();
+        
+        System.out.println("Computed heuristic function in " + (end - start) +
+                           " milliseconds.");
+        
         Queue<LatticeNodeHolder> open = new PriorityQueue<>();
         Map<LatticeNode, Integer> distance = new HashMap<>();
         Map<LatticeNode, LatticeNode> parents = new HashMap<>();
