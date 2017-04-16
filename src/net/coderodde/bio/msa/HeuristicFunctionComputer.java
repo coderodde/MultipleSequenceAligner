@@ -35,12 +35,6 @@ final class HeuristicFunctionComputer {
         LatticeNode target = instance.getTargetNode();
         Queue<LatticeNodeHolder> open = new PriorityQueue<>();
         open.add(new LatticeNodeHolder(target, 0));
-//        heuristicFunction.put(dimension1,
-//                              dimension2,
-//                              extractPoint(target, 
-//                                           dimension1, 
-//                                           dimension2),
-//                              0);
         
         while (!open.isEmpty()) {
             LatticeNodeHolder currentNodeHolder = open.remove();

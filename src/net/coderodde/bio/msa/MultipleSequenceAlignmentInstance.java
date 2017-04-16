@@ -3,6 +3,7 @@ package net.coderodde.bio.msa;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +60,8 @@ public final class MultipleSequenceAlignmentInstance {
         distance.put(sourceNode, 0);
         parents.put(sourceNode, null);
         
+        Set<LatticeNode> closed = new HashSet<>();
+        
         while (true) {
             LatticeNode currentNode = open.remove().getNode();
             
@@ -66,7 +69,17 @@ public final class MultipleSequenceAlignmentInstance {
                 return tracebackPath(parents, distance.get(currentNode));
             }
             
+            if (closed.contains(currentNode)) {
+                continue;
+            }
+            
+            closed.add(currentNode);
+            
             for (LatticeNode childNode : currentNode.getChildren()) {
+                if (closed.contains(childNode)) {
+                    continue;
+                }
+                
                 int tentativeCost = distance.get(currentNode) +
                                     getWeight(currentNode, childNode);
                 Integer currentCost = distance.get(childNode);
