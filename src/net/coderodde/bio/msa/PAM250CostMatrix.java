@@ -8,24 +8,24 @@ import net.coderodde.bio.msa.CostMatrix;
 public final class PAM250CostMatrix implements CostMatrix<Integer> {
 
     private static PAM250CostMatrix instance;
-    
+
     private final Map<Character, Map<Character, Integer>> m = new HashMap<>();
-    
+
     public static PAM250CostMatrix getPAM250CostMatrix() {
         if (instance == null) {
             instance = new PAM250CostMatrix();
         }
-        
+
         return instance;
     } 
-    
+
     private PAM250CostMatrix() {
         AminoAcidAlphabet alphabet = AminoAcidAlphabet.getAminoAcidAlphabet();
-        
+
         alphabet.getCharacterSet().stream().forEach((character) -> {
             m.put(character, new HashMap<>());
         });
-        
+
         m.get('A').put('A', -2);
         m.get('R').put('A', 2);
         m.get('A').put('R', 2);
@@ -427,7 +427,7 @@ public final class PAM250CostMatrix implements CostMatrix<Integer> {
         m.get('Y').put('V', 2);
         m.get('V').put('V', -4);
     }
-    
+
     @Override
     public Integer getCost(Character aminoAcidChar1, Character aminoAcidChar2) {
         try {
